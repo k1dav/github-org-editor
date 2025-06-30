@@ -1,0 +1,24 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "FastApi: runserver",
+      "type": "shell",
+      "command": "/workspaces/twinkle-eval-rag/api/.venv/bin/uvicorn",
+      "args": [
+        "app.main:app",
+        "--host=0.0.0.0",
+        "--reload",
+        "--port=8000"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/api"
+      },
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
