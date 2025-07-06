@@ -24,13 +24,13 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-  
+
   // 回調函式，用於自訂認證流程
   callbacks: {
     /**
      * JWT 回調函式
      * 在 JWT token 建立或更新時呼叫
-     * 
+     *
      * @param token - 目前的 JWT token
      * @param account - OAuth 帳號資訊（僅在首次登入時提供）
      * @returns 更新後的 token
@@ -46,7 +46,7 @@ export const authOptions: NextAuthOptions = {
     /**
      * Session 回調函式
      * 在建立 session 物件時呼叫
-     * 
+     *
      * @param session - 目前的 session
      * @param token - JWT token
      * @returns 更新後的 session
@@ -61,6 +61,6 @@ export const authOptions: NextAuthOptions = {
   // 自訂認證頁面路徑
   pages: {
     signIn: '/auth/signin', // 自訂登入頁面
-    error: '/auth/error',   // 自訂錯誤頁面
+    error: '/auth/error', // 自訂錯誤頁面
   },
 }

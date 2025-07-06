@@ -3,10 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { Octokit } from '@octokit/rest'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.accessToken) {
@@ -32,7 +29,7 @@ export async function GET(
 
     // Get detailed member roles
     const membersWithRoles = await Promise.all(
-      members.map(async (member) => {
+      members.map(async member => {
         try {
           const { data: membership } = await octokit.rest.teams.getMembershipForUserInOrg({
             org,
@@ -65,14 +62,11 @@ export async function GET(
 
     return NextResponse.json({
       success: true,
-      data: membersWithRoles
+      data: membersWithRoles,
     })
   } catch (error) {
     console.error('Failed to fetch team members:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch team members' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch team members' }, { status: 500 })
   }
 }
 
@@ -112,14 +106,11 @@ export async function POST(
 
     return NextResponse.json({
       success: true,
-      message: 'Member added to team successfully'
+      message: 'Member added to team successfully',
     })
   } catch (error) {
     console.error('Failed to add team member:', error)
-    return NextResponse.json(
-      { error: 'Failed to add team member' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to add team member' }, { status: 500 })
   }
 }
 
@@ -158,13 +149,10 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: 'Member removed from team successfully'
+      message: 'Member removed from team successfully',
     })
   } catch (error) {
     console.error('Failed to remove team member:', error)
-    return NextResponse.json(
-      { error: 'Failed to remove team member' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to remove team member' }, { status: 500 })
   }
 }

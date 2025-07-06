@@ -3,10 +3,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { GitHubClient } from '@/lib/github'
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { repo: string } }
-) {
+export async function PATCH(request: NextRequest, { params }: { params: { repo: string } }) {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.accessToken) {
@@ -30,13 +27,13 @@ export async function PATCH(
     }
 
     const github = new GitHubClient(session.accessToken, org)
-    
+
     // 更新儲存庫描述
     const updatedRepo = await github.updateRepositoryDescription(repo, description)
 
     return NextResponse.json({
       success: true,
-      data: updatedRepo
+      data: updatedRepo,
     })
   } catch (error) {
     console.error('Failed to update repository description:', error)
@@ -47,25 +44,22 @@ export async function PATCH(
   }
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ repo: string }> }
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ repo: string }> }) {
   try {
     const { repo } = await params
     const { newName } = await request.json()
 
     if (!newName || typeof newName !== 'string') {
-      return NextResponse.json(
-        { error: 'New repository name is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'New repository name is required' }, { status: 400 })
     }
 
     // 驗證新名稱格式
     if (!/^[a-zA-Z0-9._-]+$/.test(newName)) {
       return NextResponse.json(
-        { error: 'Repository name can only contain letters, numbers, dots, underscores, and hyphens' },
+        {
+          error:
+            'Repository name can only contain letters, numbers, dots, underscores, and hyphens',
+        },
         { status: 400 }
       )
     }
@@ -85,11 +79,11 @@ export async function PUT(
 
     return NextResponse.json({
       success: true,
-      data: updatedRepo
+      data: updatedRepo,
     })
   } catch (error) {
     console.error('Error updating repository name:', error)
-    
+
     if (error instanceof Error) {
       if (error.message.includes('422')) {
         return NextResponse.json(
@@ -98,16 +92,10 @@ export async function PUT(
         )
       }
       if (error.message.includes('404')) {
-        return NextResponse.json(
-          { error: 'Repository not found' },
-          { status: 404 }
-        )
+        return NextResponse.json({ error: 'Repository not found' }, { status: 404 })
       }
     }
 
-    return NextResponse.json(
-      { error: 'Failed to update repository name' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update repository name' }, { status: 500 })
   }
-} 
+}

@@ -21,14 +21,11 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: teams
+      data: teams,
     })
   } catch (error) {
     console.error('Failed to fetch teams:', error)
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch teams' },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: false, error: 'Failed to fetch teams' }, { status: 500 })
   }
 }
 
@@ -73,13 +70,10 @@ export async function POST(request: NextRequest) {
         members_count: team.members_count || 0,
         repos_count: team.repos_count || 0,
         html_url: team.html_url,
-      }
+      },
     })
   } catch (error) {
     console.error('Failed to create team:', error)
-    return NextResponse.json(
-      { success: false, error: 'Failed to create team' },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: false, error: 'Failed to create team' }, { status: 500 })
   }
 }

@@ -3,10 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { Octokit } from '@octokit/rest'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.accessToken) {
@@ -55,13 +52,10 @@ export async function GET(
           type: repo.owner.type,
           site_admin: repo.owner.site_admin,
         },
-      }))
+      })),
     })
   } catch (error) {
     console.error('Failed to fetch team repositories:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch team repositories' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch team repositories' }, { status: 500 })
   }
-} 
+}

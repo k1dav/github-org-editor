@@ -11,10 +11,10 @@ import { GitHubClient } from '@/lib/github'
 /**
  * GET /api/members
  * 取得組織所有成員列表
- * 
+ *
  * @param request - Next.js 請求物件
  * @returns 成員列表 JSON 回應
- * 
+ *
  * 需要：
  * - 有效的使用者認證會話
  * - GitHub access token
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
   try {
     // 檢查使用者認證狀態
     const session = await getServerSession(authOptions)
-    
+
     if (!session || !session.accessToken) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: members
+      data: members,
     })
   } catch (error) {
     console.error('Error fetching members:', error)
@@ -52,10 +52,10 @@ export async function GET(request: NextRequest) {
 /**
  * POST /api/members
  * 新增成員到組織
- * 
+ *
  * @param request - Next.js 請求物件，body 包含 { username: string, role?: 'admin' | 'member' }
  * @returns 操作成功回應
- * 
+ *
  * 需要：
  * - 有效的使用者認證會話
  * - 請求 body 中包含有效的 username
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
   try {
     // 檢查使用者認證狀態
     const session = await getServerSession(authOptions)
-    
+
     if (!session || !session.accessToken) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
 
     // 解析請求資料
     const { username, role } = await request.json()
-    
+
     // 驗證必要欄位
     if (!username) {
       return NextResponse.json({ error: 'Username is required' }, { status: 400 })

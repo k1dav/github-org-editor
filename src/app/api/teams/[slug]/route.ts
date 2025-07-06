@@ -3,10 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { Octokit } from '@octokit/rest'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.accessToken) {
@@ -56,14 +53,11 @@ export async function GET(
         members_count: members.length,
         repos_count: repos.length,
         html_url: team.html_url,
-      }
+      },
     })
   } catch (error) {
     console.error('Failed to fetch team details:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch team details' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch team details' }, { status: 500 })
   }
 }
 
@@ -95,14 +89,11 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: 'Team deleted successfully'
+      message: 'Team deleted successfully',
     })
   } catch (error) {
     console.error('Failed to delete team:', error)
-    return NextResponse.json(
-      { error: 'Failed to delete team' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to delete team' }, { status: 500 })
   }
 }
 
@@ -150,13 +141,10 @@ export async function PATCH(
         members_count: team.members_count,
         repos_count: team.repos_count,
         html_url: team.html_url,
-      }
+      },
     })
   } catch (error) {
     console.error('Failed to update team:', error)
-    return NextResponse.json(
-      { error: 'Failed to update team' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update team' }, { status: 500 })
   }
 }

@@ -1,7 +1,17 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Users, Settings, Trash2, Edit, GitBranch, UserPlus, GitBranchPlus, Edit3 } from 'lucide-react'
+import {
+  Plus,
+  Users,
+  Settings,
+  Trash2,
+  Edit,
+  GitBranch,
+  UserPlus,
+  GitBranchPlus,
+  Edit3,
+} from 'lucide-react'
 import { Input, Textarea, Select, Button } from '@/components/ui/FormElements'
 import type { Team, TeamMember, Repository, OrganizationMember } from '@/types/github'
 
@@ -39,11 +49,7 @@ export default function TeamsPage() {
       const response = await fetch(`/api/teams/${teamSlug}`)
       if (response.ok) {
         const data = await response.json()
-        setTeams(prevTeams => 
-          prevTeams.map(team => 
-            team.slug === teamSlug ? data.data : team
-          )
-        )
+        setTeams(prevTeams => prevTeams.map(team => (team.slug === teamSlug ? data.data : team)))
       }
     } catch (error) {
       console.error(`Failed to update team details for ${teamSlug}:`, error)
@@ -56,11 +62,9 @@ export default function TeamsPage() {
       const response = await fetch(`/api/teams/${teamSlug}`)
       if (response.ok) {
         const data = await response.json()
-        setTeams(prevTeams => 
-          prevTeams.map(team => 
-            team.slug === teamSlug 
-              ? { ...team, members_count: data.data.members_count }
-              : team
+        setTeams(prevTeams =>
+          prevTeams.map(team =>
+            team.slug === teamSlug ? { ...team, members_count: data.data.members_count } : team
           )
         )
       }
@@ -75,11 +79,9 @@ export default function TeamsPage() {
       const response = await fetch(`/api/teams/${teamSlug}`)
       if (response.ok) {
         const data = await response.json()
-        setTeams(prevTeams => 
-          prevTeams.map(team => 
-            team.slug === teamSlug 
-              ? { ...team, repos_count: data.data.repos_count }
-              : team
+        setTeams(prevTeams =>
+          prevTeams.map(team =>
+            team.slug === teamSlug ? { ...team, repos_count: data.data.repos_count } : team
           )
         )
       }
@@ -93,9 +95,9 @@ export default function TeamsPage() {
       const response = await fetch('/api/teams', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(teamData)
+        body: JSON.stringify(teamData),
       })
-      
+
       if (response.ok) {
         const result = await response.json()
         // 新增團隊後，將新團隊加入列表
@@ -109,21 +111,19 @@ export default function TeamsPage() {
 
   const handleEditTeam = async (teamData: Partial<Team>) => {
     if (!selectedTeam) return
-    
+
     try {
       const response = await fetch(`/api/teams/${selectedTeam.slug}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(teamData)
+        body: JSON.stringify(teamData),
       })
-      
+
       if (response.ok) {
         const result = await response.json()
         // 更新特定團隊的資訊
-        setTeams(prevTeams => 
-          prevTeams.map(team => 
-            team.slug === selectedTeam.slug ? result.team : team
-          )
+        setTeams(prevTeams =>
+          prevTeams.map(team => (team.slug === selectedTeam.slug ? result.team : team))
         )
         setShowEditForm(false)
         setSelectedTeam(null)
@@ -135,12 +135,12 @@ export default function TeamsPage() {
 
   const handleDeleteTeam = async (teamSlug: string) => {
     if (!confirm('確定要刪除此團隊嗎？')) return
-    
+
     try {
       const response = await fetch(`/api/teams/${teamSlug}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       })
-      
+
       if (response.ok) {
         // 從列表中移除被刪除的團隊
         setTeams(prevTeams => prevTeams.filter(team => team.slug !== teamSlug))
@@ -154,10 +154,10 @@ export default function TeamsPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-300 rounded w-1/4 mb-6"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-48 bg-gray-300 rounded"></div>
+          <div className="mb-6 h-8 w-1/4 rounded bg-gray-300"></div>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <div key={i} className="h-48 rounded bg-gray-300"></div>
             ))}
           </div>
         </div>
@@ -167,51 +167,49 @@ export default function TeamsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">團隊管理</h1>
-        <Button
-          onClick={() => setShowCreateForm(true)}
-          className="flex items-center gap-2"
-        >
+        <Button onClick={() => setShowCreateForm(true)} className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
           新增團隊
         </Button>
       </div>
 
       {teams.length === 0 ? (
-        <div className="text-center py-12">
-          <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">尚無團隊</h3>
-          <p className="text-gray-500 mb-4">建立第一個團隊來開始組織您的成員</p>
-          <Button
-            onClick={() => setShowCreateForm(true)}
-          >
-            建立團隊
-          </Button>
+        <div className="py-12 text-center">
+          <Users className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+          <h3 className="mb-2 text-lg font-medium text-gray-900">尚無團隊</h3>
+          <p className="mb-4 text-gray-500">建立第一個團隊來開始組織您的成員</p>
+          <Button onClick={() => setShowCreateForm(true)}>建立團隊</Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {teams.map((team) => (
-            <div key={team.id} className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-              <div className="flex justify-between items-start mb-4">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {teams.map(team => (
+            <div
+              key={team.id}
+              className="rounded-lg border border-gray-200 bg-white p-6 transition-shadow hover:shadow-md"
+            >
+              <div className="mb-4 flex items-start justify-between">
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <h3 className="text-lg font-semibold text-gray-900 truncate">{team.name}</h3>
-                    <span className={`px-2 py-1 text-xs rounded-full flex-shrink-0 ${
-                      team.privacy === 'secret' 
-                        ? 'bg-red-100 text-red-800' 
-                        : 'bg-green-100 text-green-800'
-                    }`}>
+                  <div className="mb-2 flex items-center gap-2">
+                    <h3 className="truncate text-lg font-semibold text-gray-900">{team.name}</h3>
+                    <span
+                      className={`flex-shrink-0 rounded-full px-2 py-1 text-xs ${
+                        team.privacy === 'secret'
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-green-100 text-green-800'
+                      }`}
+                    >
                       {team.privacy === 'secret' ? '秘密' : '公開'}
                     </span>
                   </div>
                   {team.description && (
-                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">{team.description}</p>
+                    <p className="mb-3 line-clamp-2 text-sm text-gray-600">{team.description}</p>
                   )}
                 </div>
               </div>
 
-              <div className="space-y-3 mb-4">
+              <div className="mb-4 space-y-3">
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <Users className="h-4 w-4" />
                   <span>{team.members_count} 位成員</span>
@@ -225,14 +223,14 @@ export default function TeamsPage() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+              <div className="flex items-center justify-between border-t border-gray-100 pt-4">
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => {
                       setSelectedTeam(team)
                       setShowMemberModal(true)
                     }}
-                    className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                    className="rounded p-2 text-gray-400 transition-colors hover:bg-blue-50 hover:text-blue-600"
                     title="管理成員"
                   >
                     <Users className="h-4 w-4" />
@@ -242,7 +240,7 @@ export default function TeamsPage() {
                       setSelectedTeam(team)
                       setShowRepositoryModal(true)
                     }}
-                    className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded transition-colors"
+                    className="rounded p-2 text-gray-400 transition-colors hover:bg-green-50 hover:text-green-600"
                     title="管理儲存庫"
                   >
                     <GitBranch className="h-4 w-4" />
@@ -252,7 +250,7 @@ export default function TeamsPage() {
                       setSelectedTeam(team)
                       setShowEditForm(true)
                     }}
-                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded transition-colors"
+                    className="rounded p-2 text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-600"
                     title="編輯團隊"
                   >
                     <Edit className="h-4 w-4" />
@@ -260,7 +258,7 @@ export default function TeamsPage() {
                 </div>
                 <button
                   onClick={() => handleDeleteTeam(team.slug)}
-                  className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                  className="rounded p-2 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600"
                   title="刪除團隊"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -272,10 +270,7 @@ export default function TeamsPage() {
       )}
 
       {showCreateForm && (
-        <CreateTeamModal
-          onClose={() => setShowCreateForm(false)}
-          onSubmit={handleCreateTeam}
-        />
+        <CreateTeamModal onClose={() => setShowCreateForm(false)} onSubmit={handleCreateTeam} />
       )}
 
       {showEditForm && selectedTeam && (
@@ -314,18 +309,18 @@ export default function TeamsPage() {
   )
 }
 
-function CreateTeamModal({ 
-  onClose, 
-  onSubmit 
-}: { 
+function CreateTeamModal({
+  onClose,
+  onSubmit,
+}: {
   onClose: () => void
-  onSubmit: (data: Partial<Team>) => void 
+  onSubmit: (data: Partial<Team>) => void
 }) {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     privacy: 'closed' as 'secret' | 'closed',
-    permission: 'pull' as Team['permission']
+    permission: 'pull' as Team['permission'],
   })
 
   // 添加 ESC 鍵退出功能
@@ -346,50 +341,46 @@ function CreateTeamModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-lg font-semibold mb-4">建立新團隊</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="w-full max-w-md rounded-lg bg-white p-6">
+        <h2 className="mb-4 text-lg font-semibold">建立新團隊</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              團隊名稱
-            </label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">團隊名稱</label>
             <Input
               type="text"
               value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
+              onChange={e => setFormData({ ...formData, name: e.target.value })}
               required
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              描述
-            </label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">描述</label>
             <Textarea
               value={formData.description}
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
+              onChange={e => setFormData({ ...formData, description: e.target.value })}
               rows={3}
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              隱私設定
-            </label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">隱私設定</label>
             <Select
               value={formData.privacy}
-              onChange={(e) => setFormData({...formData, privacy: e.target.value as 'secret' | 'closed'})}
+              onChange={e =>
+                setFormData({ ...formData, privacy: e.target.value as 'secret' | 'closed' })
+              }
             >
               <option value="closed">封閉 - 團隊成員可見</option>
               <option value="secret">秘密 - 完全隱藏</option>
             </Select>
           </div>
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              預設權限
-            </label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">預設權限</label>
             <Select
               value={formData.permission}
-              onChange={(e) => setFormData({...formData, permission: e.target.value as Team['permission']})}
+              onChange={e =>
+                setFormData({ ...formData, permission: e.target.value as Team['permission'] })
+              }
             >
               <option value="pull">Pull - 讀取權限</option>
               <option value="triage">Triage - 分類權限</option>
@@ -399,18 +390,10 @@ function CreateTeamModal({
             </Select>
           </div>
           <div className="flex justify-end gap-3">
-            <Button
-              type="button"
-              onClick={onClose}
-              variant="secondary"
-            >
+            <Button type="button" onClick={onClose} variant="secondary">
               取消
             </Button>
-            <Button
-              type="submit"
-            >
-              建立
-            </Button>
+            <Button type="submit">建立</Button>
           </div>
         </form>
       </div>
@@ -418,20 +401,20 @@ function CreateTeamModal({
   )
 }
 
-function EditTeamModal({ 
+function EditTeamModal({
   team,
-  onClose, 
-  onSubmit 
-}: { 
+  onClose,
+  onSubmit,
+}: {
   team: Team
   onClose: () => void
-  onSubmit: (data: Partial<Team>) => void 
+  onSubmit: (data: Partial<Team>) => void
 }) {
   const [formData, setFormData] = useState({
     name: team.name,
     description: team.description || '',
     privacy: team.privacy,
-    permission: team.permission
+    permission: team.permission,
   })
 
   // 添加 ESC 鍵退出功能
@@ -452,50 +435,46 @@ function EditTeamModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-lg font-semibold mb-4">編輯團隊</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="w-full max-w-md rounded-lg bg-white p-6">
+        <h2 className="mb-4 text-lg font-semibold">編輯團隊</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              團隊名稱
-            </label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">團隊名稱</label>
             <Input
               type="text"
               value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
+              onChange={e => setFormData({ ...formData, name: e.target.value })}
               required
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              描述
-            </label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">描述</label>
             <Textarea
               value={formData.description}
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
+              onChange={e => setFormData({ ...formData, description: e.target.value })}
               rows={3}
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              隱私設定
-            </label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">隱私設定</label>
             <Select
               value={formData.privacy}
-              onChange={(e) => setFormData({...formData, privacy: e.target.value as 'secret' | 'closed'})}
+              onChange={e =>
+                setFormData({ ...formData, privacy: e.target.value as 'secret' | 'closed' })
+              }
             >
               <option value="closed">封閉 - 團隊成員可見</option>
               <option value="secret">秘密 - 完全隱藏</option>
             </Select>
           </div>
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              預設權限
-            </label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">預設權限</label>
             <Select
               value={formData.permission}
-              onChange={(e) => setFormData({...formData, permission: e.target.value as Team['permission']})}
+              onChange={e =>
+                setFormData({ ...formData, permission: e.target.value as Team['permission'] })
+              }
             >
               <option value="pull">Pull - 讀取權限</option>
               <option value="triage">Triage - 分類權限</option>
@@ -505,18 +484,10 @@ function EditTeamModal({
             </Select>
           </div>
           <div className="flex justify-end gap-3">
-            <Button
-              type="button"
-              onClick={onClose}
-              variant="secondary"
-            >
+            <Button type="button" onClick={onClose} variant="secondary">
               取消
             </Button>
-            <Button
-              type="submit"
-            >
-              更新
-            </Button>
+            <Button type="submit">更新</Button>
           </div>
         </form>
       </div>
@@ -524,20 +495,23 @@ function EditTeamModal({
   )
 }
 
-function TeamMemberModal({ 
-  team, 
+function TeamMemberModal({
+  team,
   onClose,
-  onUpdate
-}: { 
+  onUpdate,
+}: {
   team: Team
-  onClose: () => void 
+  onClose: () => void
   onUpdate: () => void
 }) {
   const [members, setMembers] = useState<TeamMember[]>([])
   const [allMembers, setAllMembers] = useState<OrganizationMember[]>([])
   const [loading, setLoading] = useState(true)
   const [showAddMember, setShowAddMember] = useState(false)
-  const [newMember, setNewMember] = useState({ username: '', role: 'member' as 'member' | 'maintainer' })
+  const [newMember, setNewMember] = useState({
+    username: '',
+    role: 'member' as 'member' | 'maintainer',
+  })
 
   // 添加 ESC 鍵退出功能
   useEffect(() => {
@@ -589,7 +563,7 @@ function TeamMemberModal({
       const response = await fetch(`/api/teams/${team.slug}/members`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newMember)
+        body: JSON.stringify(newMember),
       })
 
       if (response.ok) {
@@ -608,7 +582,7 @@ function TeamMemberModal({
       const response = await fetch(`/api/teams/${team.slug}/members`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, role })
+        body: JSON.stringify({ username, role }),
       })
 
       if (response.ok) {
@@ -625,7 +599,7 @@ function TeamMemberModal({
 
     try {
       const response = await fetch(`/api/teams/${team.slug}/members?username=${username}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       })
 
       if (response.ok) {
@@ -637,24 +611,21 @@ function TeamMemberModal({
     }
   }
 
-  const availableMembers = allMembers.filter(member => 
-    !members.some(teamMember => teamMember.login === member.login)
+  const availableMembers = allMembers.filter(
+    member => !members.some(teamMember => teamMember.login === member.login)
   )
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[80vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="max-h-[80vh] w-full max-w-4xl overflow-y-auto rounded-lg bg-white p-6">
+        <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">{team.name} - 成員管理</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
             ✕
           </button>
         </div>
 
-        <div className="flex justify-between items-center mb-4">
+        <div className="mb-4 flex items-center justify-between">
           <div>
             <h3 className="font-medium">團隊成員</h3>
             <p className="text-sm text-gray-500">點擊下拉選單調整成員權限</p>
@@ -668,32 +639,35 @@ function TeamMemberModal({
             新增成員
           </Button>
         </div>
-        
+
         {loading ? (
-          <div className="text-center py-8">載入中...</div>
+          <div className="py-8 text-center">載入中...</div>
         ) : members.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">此團隊尚無成員</div>
+          <div className="py-8 text-center text-gray-500">此團隊尚無成員</div>
         ) : (
-          <div className="space-y-3 mb-6">
-            {members.map((member) => (
-              <div key={member.id} className="flex items-center justify-between p-3 border border-gray-200 rounded">
+          <div className="mb-6 space-y-3">
+            {members.map(member => (
+              <div
+                key={member.id}
+                className="flex items-center justify-between rounded border border-gray-200 p-3"
+              >
                 <div className="flex items-center gap-3">
                   <img
                     src={member.avatar_url}
                     alt={member.login}
-                    className="w-8 h-8 rounded-full"
+                    className="h-8 w-8 rounded-full"
                   />
                   <div>
                     <div className="font-medium">{member.login}</div>
-                    {member.name && (
-                      <div className="text-sm text-gray-500">{member.name}</div>
-                    )}
+                    {member.name && <div className="text-sm text-gray-500">{member.name}</div>}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <Select
                     value={member.role}
-                    onChange={(e) => updateMemberRole(member.login, e.target.value as 'member' | 'maintainer')}
+                    onChange={e =>
+                      updateMemberRole(member.login, e.target.value as 'member' | 'maintainer')
+                    }
                     fullWidth={false}
                     className="min-w-[120px] text-xs"
                   >
@@ -702,7 +676,7 @@ function TeamMemberModal({
                   </Select>
                   <button
                     onClick={() => removeMember(member.login)}
-                    className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
+                    className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-600"
                     title="移除成員"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -715,16 +689,16 @@ function TeamMemberModal({
 
         {showAddMember && (
           <div className="border-t border-gray-200 pt-4">
-            <h4 className="font-medium mb-3">新增成員</h4>
-            <div className="flex gap-3 mb-3">
+            <h4 className="mb-3 font-medium">新增成員</h4>
+            <div className="mb-3 flex gap-3">
               <Select
                 value={newMember.username}
-                onChange={(e) => setNewMember({...newMember, username: e.target.value})}
+                onChange={e => setNewMember({ ...newMember, username: e.target.value })}
                 fullWidth={false}
                 className="min-w-[200px]"
               >
                 <option value="">選擇成員</option>
-                {availableMembers.map((member) => (
+                {availableMembers.map(member => (
                   <option key={member.id} value={member.login}>
                     {member.login} {member.name && `(${member.name})`}
                   </option>
@@ -732,7 +706,9 @@ function TeamMemberModal({
               </Select>
               <Select
                 value={newMember.role}
-                onChange={(e) => setNewMember({...newMember, role: e.target.value as 'member' | 'maintainer'})}
+                onChange={e =>
+                  setNewMember({ ...newMember, role: e.target.value as 'member' | 'maintainer' })
+                }
                 fullWidth={false}
               >
                 <option value="member">成員 - 一般權限</option>
@@ -740,18 +716,10 @@ function TeamMemberModal({
               </Select>
             </div>
             <div className="flex gap-2">
-              <Button
-                onClick={addMember}
-                disabled={!newMember.username}
-                size="sm"
-              >
+              <Button onClick={addMember} disabled={!newMember.username} size="sm">
                 新增
               </Button>
-              <Button
-                onClick={() => setShowAddMember(false)}
-                variant="secondary"
-                size="sm"
-              >
+              <Button onClick={() => setShowAddMember(false)} variant="secondary" size="sm">
                 取消
               </Button>
             </div>
@@ -762,13 +730,13 @@ function TeamMemberModal({
   )
 }
 
-function TeamRepositoryModal({ 
-  team, 
+function TeamRepositoryModal({
+  team,
   onClose,
-  onUpdate
-}: { 
+  onUpdate,
+}: {
   team: Team
-  onClose: () => void 
+  onClose: () => void
   onUpdate: () => void
 }) {
   const [repositories, setRepositories] = useState<Repository[]>([])
@@ -829,7 +797,7 @@ function TeamRepositoryModal({
       const response = await fetch(`/api/teams/${team.slug}/repositories/${newRepository.name}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ permission: newRepository.permission })
+        body: JSON.stringify({ permission: newRepository.permission }),
       })
 
       if (response.ok) {
@@ -848,7 +816,7 @@ function TeamRepositoryModal({
 
     try {
       const response = await fetch(`/api/teams/${team.slug}/repositories/${repoName}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       })
 
       if (response.ok) {
@@ -865,7 +833,7 @@ function TeamRepositoryModal({
       const response = await fetch(`/api/teams/${team.slug}/repositories/${repoName}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ permission })
+        body: JSON.stringify({ permission }),
       })
 
       if (response.ok) {
@@ -877,8 +845,8 @@ function TeamRepositoryModal({
     }
   }
 
-  const availableRepositories = allRepositories.filter(repo => 
-    !repositories.some(teamRepo => teamRepo.name === repo.name)
+  const availableRepositories = allRepositories.filter(
+    repo => !repositories.some(teamRepo => teamRepo.name === repo.name)
   )
 
   const permissionOptions = [
@@ -886,7 +854,7 @@ function TeamRepositoryModal({
     { value: 'triage', label: 'Triage - 分類問題和 PR' },
     { value: 'push', label: 'Push - 讀取和寫入' },
     { value: 'maintain', label: 'Maintain - 管理儲存庫' },
-    { value: 'admin', label: 'Admin - 完整管理權限' }
+    { value: 'admin', label: 'Admin - 完整管理權限' },
   ]
 
   const saveDescription = async (repoName: string) => {
@@ -894,10 +862,12 @@ function TeamRepositoryModal({
       const response = await fetch(`/api/repositories/${repoName}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ description: editDescription })
+        body: JSON.stringify({ description: editDescription }),
       })
       if (response.ok) {
-        setRepositories((prev: Repository[]) => prev.map((r) => r.name === repoName ? { ...r, description: editDescription } : r))
+        setRepositories((prev: Repository[]) =>
+          prev.map(r => (r.name === repoName ? { ...r, description: editDescription } : r))
+        )
         setEditingRepo(null)
         setEditDescription('')
         onUpdate()
@@ -908,19 +878,16 @@ function TeamRepositoryModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[80vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="max-h-[80vh] w-full max-w-4xl overflow-y-auto rounded-lg bg-white p-6">
+        <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">{team.name} - 儲存庫管理</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
             ✕
           </button>
         </div>
 
-        <div className="flex justify-between items-center mb-4">
+        <div className="mb-4 flex items-center justify-between">
           <div>
             <h3 className="font-medium">團隊儲存庫</h3>
             <p className="text-sm text-gray-500">點擊下拉選單調整儲存庫權限</p>
@@ -934,59 +901,86 @@ function TeamRepositoryModal({
             新增儲存庫
           </Button>
         </div>
-        
+
         {loading ? (
-          <div className="text-center py-8">載入中...</div>
+          <div className="py-8 text-center">載入中...</div>
         ) : repositories.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">此團隊尚無儲存庫</div>
+          <div className="py-8 text-center text-gray-500">此團隊尚無儲存庫</div>
         ) : (
-          <div className="space-y-3 mb-6">
-            {repositories.map((repo) => (
-              <div key={repo.id} className="flex items-center justify-between p-3 border border-gray-200 rounded">
-                <div className="flex items-center gap-3 min-w-0">
-                  <GitBranch className="w-8 h-8 text-gray-400" />
-                  <div className="font-medium truncate max-w-xs" title={repo.name}>
+          <div className="mb-6 space-y-3">
+            {repositories.map(repo => (
+              <div
+                key={repo.id}
+                className="flex items-center justify-between rounded border border-gray-200 p-3"
+              >
+                <div className="flex min-w-0 items-center gap-3">
+                  <GitBranch className="h-8 w-8 text-gray-400" />
+                  <div className="max-w-xs truncate font-medium" title={repo.name}>
                     {repo.name}
                   </div>
                   {editingRepo === repo.name ? (
                     <>
                       <input
-                        className="text-sm border border-gray-300 rounded px-2 py-1 max-w-xs"
+                        className="max-w-xs rounded border border-gray-300 px-2 py-1 text-sm"
                         value={editDescription}
                         onChange={e => setEditDescription(e.target.value)}
                         autoFocus
                       />
-                      <Button size="sm" onClick={() => saveDescription(repo.name)} className="ml-1">儲存</Button>
-                      <Button size="sm" variant="secondary" onClick={() => { setEditingRepo(null); setEditDescription('') }}>取消</Button>
+                      <Button size="sm" onClick={() => saveDescription(repo.name)} className="ml-1">
+                        儲存
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => {
+                          setEditingRepo(null)
+                          setEditDescription('')
+                        }}
+                      >
+                        取消
+                      </Button>
                     </>
                   ) : (
                     <>
                       {repo.description && (
-                        <div className="text-sm text-gray-500 truncate max-w-xs" title={repo.description}>
+                        <div
+                          className="max-w-xs truncate text-sm text-gray-500"
+                          title={repo.description}
+                        >
                           {repo.description}
                         </div>
                       )}
                       <button
                         className="ml-1 p-1 text-gray-400 hover:text-blue-600"
                         title="編輯描述"
-                        onClick={() => { setEditingRepo(repo.name); setEditDescription(repo.description || '') }}
+                        onClick={() => {
+                          setEditingRepo(repo.name)
+                          setEditDescription(repo.description || '')
+                        }}
                       >
-                        <Edit3 className="w-4 h-4" />
+                        <Edit3 className="h-4 w-4" />
                       </button>
                     </>
                   )}
                 </div>
                 <div className="flex items-center gap-2">
                   <Select
-                    value={repo.permissions.admin ? 'admin' : 
-                           repo.permissions.maintain ? 'maintain' : 
-                           repo.permissions.push ? 'push' : 
-                           repo.permissions.triage ? 'triage' : 'pull'}
-                    onChange={(e) => updateRepositoryPermission(repo.name, e.target.value)}
+                    value={
+                      repo.permissions.admin
+                        ? 'admin'
+                        : repo.permissions.maintain
+                          ? 'maintain'
+                          : repo.permissions.push
+                            ? 'push'
+                            : repo.permissions.triage
+                              ? 'triage'
+                              : 'pull'
+                    }
+                    onChange={e => updateRepositoryPermission(repo.name, e.target.value)}
                     fullWidth={false}
                     className="min-w-[150px]"
                   >
-                    {permissionOptions.map((option) => (
+                    {permissionOptions.map(option => (
                       <option key={option.value} value={option.value}>
                         {option.label}
                       </option>
@@ -994,7 +988,7 @@ function TeamRepositoryModal({
                   </Select>
                   <button
                     onClick={() => removeRepository(repo.name)}
-                    className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
+                    className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-600"
                     title="移除儲存庫"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -1007,11 +1001,11 @@ function TeamRepositoryModal({
 
         {showAddRepository && (
           <div className="border-t border-gray-200 pt-4">
-            <h4 className="font-medium mb-3">新增儲存庫</h4>
-            <div className="flex gap-3 mb-3">
+            <h4 className="mb-3 font-medium">新增儲存庫</h4>
+            <div className="mb-3 flex gap-3">
               <Select
                 value={newRepository.name}
-                onChange={(e) => setNewRepository({...newRepository, name: e.target.value})}
+                onChange={e => setNewRepository({ ...newRepository, name: e.target.value })}
                 fullWidth={false}
                 className="min-w-[200px]"
               >
@@ -1019,7 +1013,7 @@ function TeamRepositoryModal({
                 {availableRepositories
                   .slice()
                   .sort((a, b) => a.name.localeCompare(b.name))
-                  .map((repo) => (
+                  .map(repo => (
                     <option key={repo.id} value={repo.name}>
                       {repo.name} {repo.description && `(${repo.description.slice(0, 30)}...)`}
                     </option>
@@ -1027,10 +1021,10 @@ function TeamRepositoryModal({
               </Select>
               <Select
                 value={newRepository.permission}
-                onChange={(e) => setNewRepository({...newRepository, permission: e.target.value})}
+                onChange={e => setNewRepository({ ...newRepository, permission: e.target.value })}
                 fullWidth={false}
               >
-                {permissionOptions.map((option) => (
+                {permissionOptions.map(option => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>
@@ -1038,18 +1032,10 @@ function TeamRepositoryModal({
               </Select>
             </div>
             <div className="flex gap-2">
-              <Button
-                onClick={addRepository}
-                disabled={!newRepository.name}
-                size="sm"
-              >
+              <Button onClick={addRepository} disabled={!newRepository.name} size="sm">
                 新增
               </Button>
-              <Button
-                onClick={() => setShowAddRepository(false)}
-                variant="secondary"
-                size="sm"
-              >
+              <Button onClick={() => setShowAddRepository(false)} variant="secondary" size="sm">
                 取消
               </Button>
             </div>

@@ -3,10 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { Octokit } from '@octokit/rest'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ repo: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ repo: string }> }) {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.accessToken) {
@@ -34,7 +31,7 @@ export async function GET(
         per_page: 100,
         page: teamsPage,
       })
-      
+
       if (teamsData.length === 0) break
       teams.push(...teamsData)
       teamsPage++
@@ -50,7 +47,7 @@ export async function GET(
         per_page: 100,
         page: collaboratorsPage,
       })
-      
+
       if (collaboratorsData.length === 0) break
       collaborators.push(...collaboratorsData)
       collaboratorsPage++
@@ -65,7 +62,7 @@ export async function GET(
         per_page: 100,
         page: membersPage,
       })
-      
+
       if (membersData.length === 0) break
       orgMembers.push(...membersData)
       membersPage++
@@ -87,7 +84,7 @@ export async function GET(
         name: repo,
         full_name: `${org}/${repo}`,
       },
-      permission: collaborator.role_name || 'read'
+      permission: collaborator.role_name || 'read',
     }))
 
     const teamPermissions = teams.map(team => ({
@@ -109,7 +106,7 @@ export async function GET(
         name: repo,
         full_name: `${org}/${repo}`,
       },
-      permission: team.permission || 'read'
+      permission: team.permission || 'read',
     }))
 
     const allPermissions = [...userPermissions, ...teamPermissions]
@@ -130,21 +127,15 @@ export async function GET(
     return NextResponse.json({
       success: true,
       permissions: allPermissions,
-      potentialCollaborators
+      potentialCollaborators,
     })
   } catch (error) {
     console.error('Failed to fetch repository permissions:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch repository permissions' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch repository permissions' }, { status: 500 })
   }
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ repo: string }> }
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ repo: string }> }) {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.accessToken) {
@@ -167,7 +158,10 @@ export async function PUT(
 
     // Validate type values
     if (!['user', 'team'].includes(type)) {
-      return NextResponse.json({ error: 'Invalid type value. Must be "user" or "team"' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Invalid type value. Must be "user" or "team"' },
+        { status: 400 }
+      )
     }
 
     const octokit = new Octokit({
@@ -198,14 +192,11 @@ export async function PUT(
 
     return NextResponse.json({
       success: true,
-      message: 'Permission updated successfully'
+      message: 'Permission updated successfully',
     })
   } catch (error) {
     console.error('Failed to update repository permission:', error)
-    return NextResponse.json(
-      { error: 'Failed to update repository permission' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update repository permission' }, { status: 500 })
   }
 }
 
@@ -253,13 +244,10 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: 'Permission removed successfully'
+      message: 'Permission removed successfully',
     })
   } catch (error) {
     console.error('Failed to remove repository permission:', error)
-    return NextResponse.json(
-      { error: 'Failed to remove repository permission' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to remove repository permission' }, { status: 500 })
   }
 }

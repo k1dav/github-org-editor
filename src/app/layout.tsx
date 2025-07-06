@@ -11,20 +11,14 @@ export const metadata: Metadata = {
   description: 'Manage GitHub organization members, teams, and repository permissions',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
           <div className="min-h-screen bg-background">
             <Header />
-            <main>
-              {children}
-            </main>
+            <main>{children}</main>
           </div>
         </AuthProvider>
       </body>

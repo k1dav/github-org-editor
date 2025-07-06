@@ -5,19 +5,19 @@
  */
 
 import { Octokit } from '@octokit/rest'
-import type { 
-  GitHubUser, 
-  OrganizationMember, 
-  Team, 
-  Repository, 
+import type {
+  GitHubUser,
+  OrganizationMember,
+  Team,
+  Repository,
   TeamMember,
-  RepositoryPermission 
+  RepositoryPermission,
 } from '@/types/github'
 
 /**
  * GitHub 客戶端類別
  * 封裝了所有與 GitHub API 的互動邏輯
- * 
+ *
  * @example
  * ```typescript
  * const client = new GitHubClient('your-access-token', 'your-org')
@@ -32,10 +32,10 @@ export class GitHubClient {
 
   /**
    * 建構函式
-   * 
+   *
    * @param accessToken - GitHub Personal Access Token 或 OAuth token
    * @param org - 目標組織名稱
-   * 
+   *
    * @throws {Error} 當 accessToken 或 org 為空時拋出錯誤
    */
   constructor(accessToken: string, org: string) {
@@ -56,10 +56,10 @@ export class GitHubClient {
   /**
    * 取得組織所有成員列表
    * 包含每個成員的角色和狀態資訊
-   * 
+   *
    * @returns Promise<OrganizationMember[]> 組織成員陣列
    * @throws {Error} 當 API 呼叫失敗時拋出錯誤
-   * 
+   *
    * @example
    * ```typescript
    * const members = await client.getOrganizationMembers()
@@ -69,18 +69,18 @@ export class GitHubClient {
   async getOrganizationMembers(): Promise<OrganizationMember[]> {
     try {
       console.log(`Fetching members for organization: ${this.org}`)
-      
+
       // 取得組織成員基本列表，使用分頁
       const members: any[] = []
       let page = 1
-      
+
       while (true) {
-      const { data } = await this.octokit.orgs.listMembers({
-        org: this.org,
+        const { data } = await this.octokit.orgs.listMembers({
+          org: this.org,
           per_page: 100,
           page,
-      })
-        
+        })
+
         if (data.length === 0) break
         members.push(...data)
         page++
@@ -90,14 +90,14 @@ export class GitHubClient {
 
       // 並行取得每個成員的詳細角色資訊
       const membersWithRoles = await Promise.all(
-        members.map(async (member) => {
+        members.map(async member => {
           try {
             // 取得成員在組織中的詳細資訊（角色、狀態等）
             const { data: membership } = await this.octokit.orgs.getMembershipForUser({
               org: this.org,
               username: member.login,
             })
-            
+
             // 成功取得詳細資訊，回傳完整的成員資料
             return {
               id: member.id,
@@ -135,16 +135,18 @@ export class GitHubClient {
       return membersWithRoles
     } catch (error) {
       console.error('Error fetching organization members:', error)
-      throw new Error(`Failed to fetch organization members: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      throw new Error(
+        `Failed to fetch organization members: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
     }
   }
 
   /**
    * 取得組織所有團隊列表
-   * 
+   *
    * @returns Promise<Team[]> 團隊陣列
    * @throws {Error} 當 API 呼叫失敗時拋出錯誤
-   * 
+   *
    * @example
    * ```typescript
    * const teams = await client.getOrganizationTeams()
@@ -156,14 +158,14 @@ export class GitHubClient {
       // 取得組織所有團隊的基本資訊，使用分頁
       const teams: any[] = []
       let page = 1
-      
+
       while (true) {
-      const { data } = await this.octokit.teams.list({
-        org: this.org,
+        const { data } = await this.octokit.teams.list({
+          org: this.org,
           per_page: 100,
           page,
-      })
-        
+        })
+
         if (data.length === 0) break
         teams.push(...data)
         page++
@@ -178,14 +180,16 @@ export class GitHubClient {
         privacy: team.privacy as 'secret' | 'closed',
         permission: team.permission as 'pull' | 'triage' | 'push' | 'maintain' | 'admin',
         members_count: 0, // 可以後續獲取，避免太多 API 調用
-        repos_count: 0,   // 可以後續獲取，避免太多 API 調用
+        repos_count: 0, // 可以後續獲取，避免太多 API 調用
         html_url: team.html_url,
       }))
 
       return formattedTeams
     } catch (error) {
       console.error('Error fetching organization teams:', error)
-      throw new Error(`Failed to fetch organization teams: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      throw new Error(
+        `Failed to fetch organization teams: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
     }
   }
 
@@ -194,29 +198,29 @@ export class GitHubClient {
       // 取得團隊所有成員，使用分頁
       const members: any[] = []
       let page = 1
-      
+
       while (true) {
-      const { data } = await this.octokit.teams.listMembersInOrg({
-        org: this.org,
-        team_slug: teamSlug,
-        per_page: 100,
+        const { data } = await this.octokit.teams.listMembersInOrg({
+          org: this.org,
+          team_slug: teamSlug,
+          per_page: 100,
           page,
-      })
-        
+        })
+
         if (data.length === 0) break
         members.push(...data)
         page++
       }
 
       const membersWithRoles = await Promise.all(
-        members.map(async (member) => {
+        members.map(async member => {
           try {
             const { data: membership } = await this.octokit.teams.getMembershipForUserInOrg({
               org: this.org,
               team_slug: teamSlug,
               username: member.login,
             })
-            
+
             return {
               id: member.id,
               login: member.login,
@@ -237,7 +241,7 @@ export class GitHubClient {
               type: member.type as 'User' | 'Bot',
               site_admin: member.site_admin,
               name: member.name || undefined,
-              email: member.email || undefined,  
+              email: member.email || undefined,
               role: 'member' as const,
             }
           }
@@ -256,16 +260,16 @@ export class GitHubClient {
       // 取得組織所有儲存庫，使用分頁
       const repositories: any[] = []
       let page = 1
-      
+
       while (true) {
-      const { data } = await this.octokit.repos.listForOrg({
-        org: this.org,
-        per_page: 100,
-        sort: 'updated',
-        direction: 'desc',
+        const { data } = await this.octokit.repos.listForOrg({
+          org: this.org,
+          per_page: 100,
+          sort: 'updated',
+          direction: 'desc',
           page,
-      })
-        
+        })
+
         if (data.length === 0) break
         repositories.push(...data)
         page++
@@ -306,15 +310,15 @@ export class GitHubClient {
       // 取得儲存庫所有協作者，使用分頁
       const collaborators: any[] = []
       let page = 1
-      
+
       while (true) {
-      const { data } = await this.octokit.repos.listCollaborators({
-        owner: this.org,
-        repo: repoName,
-        per_page: 100,
+        const { data } = await this.octokit.repos.listCollaborators({
+          owner: this.org,
+          repo: repoName,
+          per_page: 100,
           page,
-      })
-        
+        })
+
         if (data.length === 0) break
         collaborators.push(...data)
         page++
@@ -356,10 +360,15 @@ export class GitHubClient {
         },
         team: null,
         repository,
-        permission: collaborator.permissions?.admin ? 'admin' :
-                   collaborator.permissions?.maintain ? 'maintain' :
-                   collaborator.permissions?.push ? 'write' :
-                   collaborator.permissions?.triage ? 'triage' : 'read',
+        permission: collaborator.permissions?.admin
+          ? 'admin'
+          : collaborator.permissions?.maintain
+            ? 'maintain'
+            : collaborator.permissions?.push
+              ? 'write'
+              : collaborator.permissions?.triage
+                ? 'triage'
+                : 'read',
       }))
     } catch (error) {
       console.error('Error fetching repository collaborators:', error)
@@ -375,7 +384,7 @@ export class GitHubClient {
       try {
         // 只檢查是否有團隊協作
         const hasTeamCollaboration = await this.hasTeamCollaboration(repo.name)
-        
+
         // 條件：沒有團隊協作
         if (!hasTeamCollaboration) {
           ownerOnlyRepos.push(repo)
@@ -390,7 +399,7 @@ export class GitHubClient {
 
   /**
    * 檢查儲存庫是否有團隊協作
-   * 
+   *
    * @param repoName - 儲存庫名稱
    * @returns Promise<boolean> 是否有團隊協作
    */
@@ -402,7 +411,7 @@ export class GitHubClient {
         repo: repoName,
         per_page: 100,
       })
-      
+
       // 如果有任何團隊有此儲存庫的權限，則有團隊協作
       return teams.length > 0
     } catch (error) {
@@ -415,22 +424,25 @@ export class GitHubClient {
    * 新增成員到組織或更新成員角色
    * 如果使用者尚未是組織成員，將發送邀請
    * 如果使用者已是成員，將更新其角色
-   * 
+   *
    * @param username - 要新增或更新的使用者名稱
    * @param role - 要設定的角色，預設為 'member'
    * @returns Promise<void>
    * @throws {Error} 當操作失敗時拋出錯誤
-   * 
+   *
    * @example
    * ```typescript
    * // 新增一般成員
    * await client.addMemberToOrganization('username')
-   * 
+   *
    * // 新增管理員
    * await client.addMemberToOrganization('username', 'admin')
    * ```
    */
-  async addMemberToOrganization(username: string, role: 'admin' | 'member' = 'member'): Promise<void> {
+  async addMemberToOrganization(
+    username: string,
+    role: 'admin' | 'member' = 'member'
+  ): Promise<void> {
     try {
       // 設定或更新使用者在組織中的成員身份和角色
       await this.octokit.orgs.setMembershipForUser({
@@ -447,16 +459,16 @@ export class GitHubClient {
   /**
    * 從組織中移除成員
    * 此操作會完全移除使用者的組織成員身份
-   * 
+   *
    * @param username - 要移除的使用者名稱
    * @returns Promise<void>
    * @throws {Error} 當操作失敗時拋出錯誤
-   * 
+   *
    * @example
    * ```typescript
    * await client.removeMemberFromOrganization('username')
    * ```
-   * 
+   *
    * @warning 此操作無法復原，請謹慎使用
    */
   async removeMemberFromOrganization(username: string): Promise<void> {
@@ -472,7 +484,11 @@ export class GitHubClient {
     }
   }
 
-  async addMemberToTeam(teamSlug: string, username: string, role: 'member' | 'maintainer' = 'member'): Promise<void> {
+  async addMemberToTeam(
+    teamSlug: string,
+    username: string,
+    role: 'member' | 'maintainer' = 'member'
+  ): Promise<void> {
     try {
       await this.octokit.teams.addOrUpdateMembershipForUserInOrg({
         org: this.org,
@@ -500,8 +516,8 @@ export class GitHubClient {
   }
 
   async setRepositoryPermission(
-    repoName: string, 
-    username: string, 
+    repoName: string,
+    username: string,
     permission: 'read' | 'triage' | 'write' | 'maintain' | 'admin'
   ): Promise<void> {
     try {
@@ -532,12 +548,12 @@ export class GitHubClient {
 
   /**
    * 更新儲存庫描述
-   * 
+   *
    * @param repoName - 儲存庫名稱
    * @param description - 新的描述內容
    * @returns Promise<Repository> 更新後的儲存庫資訊
    * @throws {Error} 當操作失敗時拋出錯誤
-   * 
+   *
    * @example
    * ```typescript
    * const updatedRepo = await client.updateRepositoryDescription('my-repo', '新的描述')
@@ -584,12 +600,12 @@ export class GitHubClient {
 
   /**
    * 更新儲存庫名稱
-   * 
+   *
    * @param oldRepoName - 舊的儲存庫名稱
    * @param newRepoName - 新的儲存庫名稱
    * @returns Promise<Repository> 更新後的儲存庫資訊
    * @throws {Error} 當操作失敗時拋出錯誤
-   * 
+   *
    * @example
    * ```typescript
    * const updatedRepo = await client.updateRepositoryName('old-repo', 'new-repo')

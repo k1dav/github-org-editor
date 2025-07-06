@@ -130,7 +130,6 @@ export interface TeamMember extends GitHubUser {
   role: 'member' | 'maintainer'
 }
 
-
 /**
  * API 回應包裝介面
  * 標準化 API 回應格式

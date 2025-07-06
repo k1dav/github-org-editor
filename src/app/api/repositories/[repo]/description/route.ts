@@ -3,19 +3,13 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { GitHubClient } from '@/lib/github'
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ repo: string }> }
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ repo: string }> }) {
   try {
     const { repo } = await params
     const { description } = await request.json()
 
     if (typeof description !== 'string') {
-      return NextResponse.json(
-        { error: 'Description must be a string' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Description must be a string' }, { status: 400 })
     }
 
     const session = await getServerSession(authOptions)
@@ -33,23 +27,17 @@ export async function PUT(
 
     return NextResponse.json({
       success: true,
-      data: updatedRepo
+      data: updatedRepo,
     })
   } catch (error) {
     console.error('Error updating repository description:', error)
-    
+
     if (error instanceof Error) {
       if (error.message.includes('404')) {
-        return NextResponse.json(
-          { error: 'Repository not found' },
-          { status: 404 }
-        )
+        return NextResponse.json({ error: 'Repository not found' }, { status: 404 })
       }
     }
 
-    return NextResponse.json(
-      { error: 'Failed to update repository description' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update repository description' }, { status: 500 })
   }
-} 
+}

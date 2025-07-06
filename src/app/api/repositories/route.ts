@@ -20,15 +20,15 @@ export async function GET(request: NextRequest) {
     const ownerOnly = searchParams.get('ownerOnly') === 'true'
 
     const github = new GitHubClient(session.accessToken, org)
-    
+
     // 根據查詢參數決定要取得哪種儲存庫
-    const repositories = ownerOnly 
+    const repositories = ownerOnly
       ? await github.getOwnerOnlyRepositories()
       : await github.getOrganizationRepositories()
 
     return NextResponse.json({
       success: true,
-      data: repositories
+      data: repositories,
     })
   } catch (error) {
     console.error('Failed to fetch repositories:', error)

@@ -40,14 +40,11 @@ export async function PUT(
 
     return NextResponse.json({
       success: true,
-      message: 'Repository permission updated successfully'
+      message: 'Repository permission updated successfully',
     })
   } catch (error) {
     console.error('Failed to update repository permission:', error)
-    return NextResponse.json(
-      { error: 'Failed to update repository permission' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update repository permission' }, { status: 500 })
   }
 }
 
@@ -81,13 +78,10 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: 'Repository removed from team successfully'
+      message: 'Repository removed from team successfully',
     })
   } catch (error) {
     console.error('Failed to remove repository from team:', error)
-    return NextResponse.json(
-      { error: 'Failed to remove repository from team' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to remove repository from team' }, { status: 500 })
   }
-} 
+}

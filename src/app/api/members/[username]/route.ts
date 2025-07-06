@@ -10,7 +10,7 @@ export async function DELETE(
   const { username } = await context.params
   try {
     const session = await getServerSession(authOptions)
-    
+
     if (!session || !session.accessToken) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -37,7 +37,7 @@ export async function PATCH(
   const { username } = await context.params
   try {
     const session = await getServerSession(authOptions)
-    
+
     if (!session || !session.accessToken) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -48,7 +48,7 @@ export async function PATCH(
     }
 
     const { role } = await request.json()
-    
+
     if (!role || !['admin', 'member'].includes(role)) {
       return NextResponse.json({ error: 'Valid role is required' }, { status: 400 })
     }
